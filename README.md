@@ -1,3 +1,8 @@
+# Read this first
+
+- Contantly hit 429 (rate limit) can get your account banned.
+- It seems you can hit 429 quicker with the Sonnet 3.7 models (probably smaller quotas).
+
 # copilot-more
 
 `copilot-more` maximizes the value of your GitHub Copilot subscription by exposing models like Claude-3.7-Sonnet for use in agentic coding tools such as Cline, or any tool that supports bring-your-own-model setups. Unlike costly pay-as-you-go APIs, this approach lets you leverage these powerful models affordably.
