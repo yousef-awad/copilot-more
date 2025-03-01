@@ -240,5 +240,5 @@ async def initialize_settings():
 @app.on_event("startup")
 async def startup_event():
     await initialize_settings()
-Footer
+
 
