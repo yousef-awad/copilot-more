@@ -107,9 +107,9 @@ Alternatively, you can add `RECORD_TRAFFIC=true` to your `.env` file.
 
 All traffic will be logged to files in the current directory with the naming pattern: copilot_traffic_YYYYMMDD_HHMMSS.mitm
 
-Attach this file when reporting issues.
+Attach this file when reporting issues. Please zip the original file that ends with the '.mitm' extension and upload to the GH issues.
 
-Note: the Authorization header has been redacted, so the refresh token won't be leaked.
+Note: the Authorization header has been redacted, so the refresh token won't be leaked. 
 
 ## 🤔 Limitation
 
