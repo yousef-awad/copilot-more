@@ -1,9 +1,10 @@
 # MUST READ!!!
 
 - Constantly hitting 429 (rate limit) can get your account banned.
-- It seems you can hit 429 quicker with the Sonnet 3.7 models (probably smaller quotas).
-- For RooCode users, highly advise to set **Rate limit** to at least 5s in Advanced Settings
-- In copilot-more, use the MIN_DELAY_SECONDS and MAX_DELAY_SECONDS settings to help you from sending too many requests too quickly.
+- It seems you can hit 429 quicker with the Claude 3.7 Sonnet models (probably smaller quotas).
+- For RooCode users, highly advised to set Rate limit to at least 5s in Advanced Settings.
+- In copilot-more, use the MIN_DELAY_SECONDS and MAX_DELAY_SECONDS settings to help prevent sending too many requests too quickly.
+- copilot-more can now display token usage stats for your awareness. [PR 41](https://github.com/jjleng/copilot-more/pull/41)
 
 # copilot-more
 
