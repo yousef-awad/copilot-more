@@ -10,8 +10,6 @@
 
 `copilot-more` maximizes the value of your GitHub Copilot subscription by exposing models like Claude-3.7-Sonnet for use in agentic coding tools such as Cline, or any tool that supports bring-your-own-model setups. Unlike costly pay-as-you-go APIs, this approach lets you leverage these powerful models affordably.
 
-The exposed models aren't limited to coding tasks—you can connect any AI client and customize parameters like temperature, context window length, and more.
-
 ## Ethical Use
 - Respect the GitHub Copilot terms of service.
 - Minimize the use of the models for non-coding purposes.
