@@ -1,6 +1,6 @@
 # MUST READ!!!
 
-- Constantly hitting 429 (rate limit) can get your account banned.
+- Constantly hitting 429 (rate limit) can get your GH Copilot subscription suspended. Knowing this is important to protect yourself. Not just copilot-more, people get banned by using LM API too because of this, see [reddit thread](https://www.reddit.com/r/RooCode/s/3VXA5FUpA5).
 - It seems you can hit 429 quicker with the Claude 3.7 Sonnet models (probably smaller quotas).
 - For RooCode users, highly advised to set Rate limit to at least 5s in Advanced Settings.
 - In copilot-more, use the MIN_DELAY_SECONDS and MAX_DELAY_SECONDS settings to help prevent sending too many requests too quickly.
