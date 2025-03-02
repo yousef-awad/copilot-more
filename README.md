@@ -2,6 +2,7 @@
 
 - Contantly hit 429 (rate limit) can get your account banned.
 - It seems you can hit 429 quicker with the Sonnet 3.7 models (probably smaller quotas).
+- For RooCode users, highly advise to set **Rate limit** to at least 5s in Advanced Settings
 
 # copilot-more
 
