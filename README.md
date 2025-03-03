@@ -5,7 +5,7 @@
 - For RooCode users, highly advised to set Rate limit to at least 5s in Advanced Settings.
 - In copilot-more, use the rate limiting configuration (see below) to control request rates and prevent hitting limits.
 - copilot-more can now display token usage stats for your awareness. [PR 41](https://github.com/jjleng/copilot-more/pull/41)
-- More rate limit features are coming on the way (https://github.com/jjleng/copilot-more/issues/43)
+- Highly recommend leveraging the advanced rate limiter features (both token- and request-based) to prevent excessive token usage.
 
 # copilot-more
 
