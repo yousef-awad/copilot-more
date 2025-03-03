@@ -13,7 +13,7 @@ If you want to know more about GH Copilot suspension risk, read this https://git
 
 ## Ethical Use
 - Respect the GitHub Copilot terms of service.
-- Minimize the use of the models for non-coding purposes.
+- Only use the API for coding tasks.
 - Be mindful of the risk of being banned by GitHub Copilot for misuse.
 
 
