@@ -1,7 +1,7 @@
 # MUST READ!!!
 
 - Constantly hitting 429 (rate limit) can get your GH Copilot subscription suspended. Knowing this is important to protect yourself. Not just copilot-more, people get banned by using LM API too because of this, see [reddit thread](https://www.reddit.com/r/RooCode/s/3VXA5FUpA5).
-- It seems you can hit 429 quicker with the Claude 3.7 Sonnet models (probably smaller quotas) + 3.7 runs faster than 3.5.
+- It seems you can hit 429 quicker with the Claude 3.7 Sonnet models (probably smaller quotas  + 3.7 runs faster than 3.5).
 - In copilot-more, use the rate limiting configuration (see below) to control request rates and prevent hitting limits.
 - copilot-more can now display token usage stats for your awareness. [PR 41](https://github.com/jjleng/copilot-more/pull/41)
 - Highly recommend leveraging the advanced rate limiter features (both token- and request-based) to prevent excessive token usage.
