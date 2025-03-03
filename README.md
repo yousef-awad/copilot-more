@@ -1,3 +1,7 @@
+# Thanks for Your Support
+
+Given that GitHub may enforce stricter policies, I want to minimize risks for users. As a result, I am transitioning the project to maintenance mode. The repository will remain available for reference, but complete removal is also a possibility, with no further notice. No major developments will be made. Please conduct your own due diligence and assess the risks before using this tool.
+
 # MUST READ!!!
 
 - Constantly hitting 429 (rate limit) can get your GH Copilot subscription suspended. Knowing this is important to protect yourself. Not just copilot-more, people get banned by using LM API too because of this, see [reddit thread](https://www.reddit.com/r/RooCode/s/3VXA5FUpA5).
