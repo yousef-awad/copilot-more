@@ -5,6 +5,8 @@
 - copilot-more can now display token usage stats for your awareness. [PR 41](https://github.com/jjleng/copilot-more/pull/41)
 - Highly recommend leveraging the advanced rate limiter features (both token- and request-based) to prevent excessive token usage.
 
+If you want to know more about GH Copilot suspension risk, read this https://github.com/RooVetGit/Roo-Code/issues/1203#issuecomment-2692865792
+
 # copilot-more
 
 `copilot-more` maximizes the value of your GitHub Copilot subscription by exposing models like Claude-3.7-Sonnet for use in agentic coding tools such as Cline, or any tool that supports bring-your-own-model setups. Unlike costly pay-as-you-go APIs, this approach lets you leverage these powerful models affordably.
