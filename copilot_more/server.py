@@ -4,16 +4,29 @@ import os
 import signal
 from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timedelta
+from typing import List, Optional
+import traceback
 
 from aiohttp import ClientSession, ClientTimeout, TCPConnector
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from rich import print
 from rich.console import Console
 from rich.table import Table
 
-from copilot_more.access_token import get_cached_copilot_token, refresh_token
+from copilot_more.access_token import (
+    get_cached_copilot_token,
+    refresh_token,
+    get_all_tokens,
+    get_current_token_index,
+    set_current_token_index,
+    get_token_errors,
+    try_next_valid_token,
+    record_token_error
+)
 from copilot_more.logger import logger
 from copilot_more.proxy import RECORD_TRAFFIC, get_proxy_url, initialize_proxy
 from copilot_more.rate_limiter import (RateLimiter, RateLimitError,
@@ -65,7 +78,18 @@ async def lifespan(app: FastAPI):
             rate_limiter.add_rule(model, rule)
     logger.info("Initialized rate limiter with configured rules")
 
-    await initialize_settings()
+    try:
+        await initialize_settings()
+    except ValueError as e:
+        # If initial token fails, try next one
+        logger.error(f"Initial token failed: {str(e)}")
+        try:
+            await try_next_valid_token()
+            await initialize_settings()
+        except ValueError as e:
+            logger.error(f"All tokens failed: {str(e)}")
+            # Continue anyway - the frontend will handle token failures
+
     print(
         "[green]Rate limiting is enabled[/green] with the following models configured:"
     )
@@ -87,7 +111,6 @@ async def lifespan(app: FastAPI):
             loop.add_signal_handler(sig, handle_signal)
     else:
         # Alternative approach for Windows
-        import signal
         # Use the default signal handler on Windows
         for sig in (signal.SIGTERM, signal.SIGINT):
             signal.signal(sig, lambda s, f: os._exit(0))
@@ -110,11 +133,15 @@ app.add_middleware(
 
 
 async def initialize_settings():
-    resp = await refresh_token()
-    endpoints = resp["endpoints"]
-    logger.debug(f"Endpoints: {json.dumps(endpoints, indent=2)}")
-    settings.chat_completions_api_endpoint = endpoints["api"] + "/chat/completions"
-    settings.models_api_endpoint = endpoints["api"] + "/models"
+    try:
+        resp = await refresh_token()
+        endpoints = resp["endpoints"]
+        logger.debug(f"Endpoints: {json.dumps(endpoints, indent=2)}")
+        settings.chat_completions_api_endpoint = endpoints["api"] + "/chat/completions"
+        settings.models_api_endpoint = endpoints["api"] + "/models"
+    except Exception as e:
+        logger.error(f"Error initializing settings: {str(e)}")
+        raise
 
 
 def extract_usage_from_response(data_list: list[dict]) -> dict:
@@ -361,6 +388,95 @@ async def list_models():
         raise HTTPException(500, f"Error fetching models: {str(e)}")
 
 
+# Models for API endpoints
+class TokenInfo(BaseModel):
+    id: str
+    status: str
+    expiration: datetime
+    is_current: bool
+    index: int
+    error_message: Optional[str] = None
+
+# Token Management API Endpoints
+@app.get("/api/tokens", response_model=List[TokenInfo])
+async def list_tokens():
+    """List all available tokens with their status"""
+    try:
+        tokens = []
+        all_tokens = get_all_tokens()
+        current_index = get_current_token_index()
+        token_errors = get_token_errors()
+
+        for i, refresh_token in enumerate(all_tokens):
+            is_current = i == current_index
+            try:
+                if is_current:
+                    token_data = await get_cached_copilot_token()
+                    status = "active"
+                    expiration = datetime.fromtimestamp(token_data.get("expires_at", 0))
+                else:
+                    status = "inactive"
+                    expiration = datetime.now() + timedelta(minutes=1)  # Placeholder
+
+                error_message = token_errors.get(i)
+                if error_message:
+                    status = "error"
+
+                tokens.append({
+                    "id": refresh_token[:8] + "...",
+                    "status": status,
+                    "expiration": expiration,
+                    "is_current": is_current,
+                    "index": i,
+                    "error_message": error_message
+                })
+            except Exception as e:
+                error_msg = str(e)
+                logger.warning(f"Error checking token {i}: {error_msg}")
+                record_token_error(i, error_msg)
+                tokens.append({
+                    "id": refresh_token[:8] + "...",
+                    "status": "error",
+                    "expiration": datetime.now(),
+                    "is_current": is_current,
+                    "index": i,
+                    "error_message": error_msg
+                })
+
+        return tokens
+    except Exception as e:
+        logger.error(f"Error listing tokens: {str(e)}")
+        raise HTTPException(500, f"Error listing tokens: {str(e)}")
+
+@app.post("/api/tokens/{index}")
+async def switch_token(index: int = Path(..., description="Token index to switch to")):
+    """Switch to a different token"""
+    try:
+        # Try to switch to the new token
+        set_current_token_index(index)
+        
+        # Force a refresh of the token to ensure it works
+        token_data = await refresh_token(index)
+        expiration = datetime.fromtimestamp(token_data.get("expires_at", 0))
+        
+        return TokenInfo(
+            id=f"{get_all_tokens()[index][:8]}...",
+            status="active",
+            expiration=expiration,
+            is_current=True,
+            index=index
+        )
+    except ValueError as e:
+        error_msg = str(e)
+        record_token_error(index, error_msg)
+        logger.error(f"Error switching to token {index}: {error_msg}")
+        raise HTTPException(400, error_msg)
+    except Exception as e:
+        error_msg = str(e)
+        record_token_error(index, error_msg)
+        logger.error(f"Error switching token: {error_msg}")
+        raise HTTPException(500, error_msg)
+
 @app.post("/chat/completions")
 async def proxy_chat_completions(request: Request):
     """
@@ -479,3 +595,12 @@ async def proxy_chat_completions(request: Request):
         stream_response(),
         media_type="text/event-stream",
     )
+
+from fastapi.responses import FileResponse
+
+# Serve frontend files
+@app.get("/")
+async def serve_frontend():
+    return FileResponse("frontend/index.html")
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
