@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Copilot Token Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>GitHub Copilot Token Manager</h1>
+        </header>
+        
+        <main>
+            <section class="token-list">
+                <div class="section-header">
+                    <h2>Available Tokens</h2>
+                    <div class="refresh-indicator"></div>
+                </div>
+                <div id="tokens-container">
+                    <!-- Token items will be inserted here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Token status updates every 30 seconds</p>
+        </footer>
+    </div>
+
+    <template id="token-template">
+        <div class="token-item">
+            <div class="token-header">
+                <div class="token-info">
+                    <span class="token-id"></span>
+                    <span class="token-status"></span>
+                </div>
+                <button class="switch-button" type="button">Make Active</button>
+            </div>
+            <div class="token-details">
+                <div class="expiration">
+                    <span class="label">Expires:</span>
+                    <span class="value"></span>
+                </div>
+                <div class="current-indicator">Current Active Token</div>
+            </div>
+        </div>
+    </template>
+
+    <script type="module" src="/static/src/main.js"></script>
+</body>
+</html>

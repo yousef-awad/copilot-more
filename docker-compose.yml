@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -9,10 +9,12 @@ services:
       - .env
     volumes:
       - .:/app
+      - ./data:/app/data
     ports:
-      - "${PORT:-15432}:${PORT:-15432}"
+      - "${PORT:-15433}:${PORT:-15433}"
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
       - REFRESH_TOKEN=${REFRESH_TOKEN}
-    command: poetry run uvicorn copilot_more.server:app --port ${PORT:-15432} --host 0.0.0.0
+      - API_BASE_URL=http://localhost:${PORT:-15433}
+    command: poetry run uvicorn copilot_more.server:app --port ${PORT:-15433} --host 0.0.0.0 --reload

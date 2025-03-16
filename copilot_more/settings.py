@@ -43,7 +43,10 @@ class Settings(BaseSettings):
 
     # GitHub Copilot API settings
     refresh_token: str = Field(
-        default="", description="GitHub Copilot refresh token for authentication"
+        default="", description="GitHub Copilot refresh tokens (comma-separated)"
+    )
+    active_token_index: int = Field(
+        default=0, description="Index of the currently active token"
     )
 
     chat_completions_api_endpoint: str = Field(
@@ -147,14 +150,30 @@ class Settings(BaseSettings):
 
     @field_validator("refresh_token")
     def validate_refresh_token(cls, v: str) -> str:
-        """Validate that the refresh token is provided and starts with 'gho_'."""
+        """Validate that the refresh tokens are provided and start with 'gho_'."""
         if not v:
             raise ValueError("REFRESH_TOKEN environment variable is required")
 
-        if not v.startswith("gho_"):
-            raise ValueError(
-                "REFRESH_TOKEN should be a GitHub OAuth token starting with 'gho_'"
-            )
+        tokens = [token.strip() for token in v.split(",")]
+        if not tokens:
+            raise ValueError("At least one refresh token must be provided")
+
+        for token in tokens:
+            if not token.startswith("gho_"):
+                raise ValueError(
+                    f"All tokens must be GitHub OAuth tokens starting with 'gho_'. Invalid token: {token[:4]}..."
+                )
+        return v
+
+    @field_validator("active_token_index")
+    def validate_active_token_index(cls, v: int, values) -> int:
+        """Validate that the active token index is valid."""
+        if "refresh_token" not in values.data:
+            return v
+            
+        tokens = values.data["refresh_token"].split(",")
+        if v < 0 or v >= len(tokens):
+            raise ValueError(f"Active token index {v} is out of range (0-{len(tokens)-1})")
         return v
 
     @field_validator("max_delay_seconds")

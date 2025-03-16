@@ -24,10 +24,16 @@ RUN poetry config virtualenvs.create false
 # Install project dependencies
 RUN poetry install --no-root --without dev
 
+# Copy frontend files first for better layer caching
+COPY frontend /app/frontend/
+
 # Copy the rest of the application
 COPY . .
 
 # Install the project itself
 RUN poetry install
 
-EXPOSE 15432
+EXPOSE 15433
+
+# Create volume for persistent data
+VOLUME ["/app/data"]
